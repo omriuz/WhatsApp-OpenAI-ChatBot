@@ -1,4 +1,6 @@
 from flask import Flask, request
+from helpers.OpenAI_api import text_completion
+from helpers.Twilio_api import send_message
 
 app = Flask(__name__)
 
@@ -13,7 +15,11 @@ def receiveMessage():
     try:
         message = request.form['Body']
         sender_id = request.form['From']
-        print(message, sender_id)
+
+        # generate response from OpenAI
+        result = text_completion(message)
+        if result['status'] == 1:
+            send_message(sender_id, result['response'])
 
     except:
         return 'Error', 500
